@@ -15,6 +15,11 @@
                 <a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-fire"></i><span>Users</span></a>
             </li>
 
+               <li class="nav-item ">
+                <a href="{{ route('companies.index') }}" class="nav-link"><i class="fas fa-fire"></i><span>Companies</span></a>
+            </li>
+
+
         </ul>
 
     </aside>
