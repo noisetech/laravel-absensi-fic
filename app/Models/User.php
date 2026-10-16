@@ -48,4 +48,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function attadance(){
+        return $this->hasMany(Attedance::class, 'user_id', 'id');
+    }
 }

@@ -8,7 +8,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class CompanyResource extends JsonResource
 {
 
-
+    public $status;
+    public $message;
     public function __construct($status, $message, $resource)
     {
         parent::__construct($resource);
