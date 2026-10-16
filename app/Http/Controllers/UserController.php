@@ -10,9 +10,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where('name', 'like', '%'. request('name') . '%')
-        ->orderBy('name', 'asc')
-        ->paginate(10);
+        $users = User::where('name', 'like', '%' . request('name') . '%')
+            ->orderBy('name', 'asc')
+            ->paginate(10);
         return view('pages.users.index', [
             'users' => $users
         ]);
@@ -36,6 +36,8 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'department' => $request->department ? $request->department : null,
+            'position' => $request->position ? $request->position : null,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
@@ -44,7 +46,8 @@ class UserController extends Controller
     }
 
 
-    public function edit(User $user){
+    public function edit(User $user)
+    {
 
         return view('pages.users.edit', [
             'user' => $user
@@ -64,6 +67,8 @@ class UserController extends Controller
             'email' => $request->email,
             'role' => $request->role,
             'password' => $request->password ? Hash::make($request->password) : $user->password,
+            'department' => $request->department ? $request->department : null,
+            'position' => $request->position ? $request->position : null,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');

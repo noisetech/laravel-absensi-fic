@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
-        'dapertemen',
+        'department',
         'position',
         'face_embedding',
         'image_url',

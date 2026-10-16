@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('position')->nullable();
-            $table->string('dapertemen')->nullable();
+            $table->string('department')->nullable();
             $table->string('face_embedding')->nullable();
             $table->string('image_url')->nullable();
         });
@@ -26,7 +26,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('position');
-            $table->dropColumn('dapertemen');
+            $table->dropColumn('department');
             $table->dropColumn('face_embedding');
             $table->dropColumn('image_url');
         });
