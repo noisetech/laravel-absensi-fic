@@ -23,10 +23,9 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
-        'department',
-        'position',
         'face_embedding',
         'image_url',
+        'status'
     ];
 
     /**
@@ -49,7 +48,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function attadance(){
+    public function attadance()
+    {
         return $this->hasMany(Attedance::class, 'user_id', 'id');
+    }
+
+    public function employeeAssignments()
+    {
+        return $this->hasMany(EmpeloyeAssignment::class, 'user_id');
     }
 }

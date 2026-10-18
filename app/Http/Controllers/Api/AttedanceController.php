@@ -10,32 +10,59 @@ use Illuminate\Support\Facades\Validator;
 
 class AttedanceController extends Controller
 {
+
     public function index(Request $request)
     {
-        $attadances = Attedance::when($request->search, function ($query) use ($request) {
-            $search = $request->search;
-
-            $query->where(function ($query) use ($search) {
-                $query->where('date', 'like', '%' . $search . '%')
-                    ->orWhereHas('users', function ($userQuery) use ($search) {
-                        $userQuery->where('name', 'like', '%' . $search . '%');
+        $attedances = Attedance::query()
+            ->whereHas('users.employeeAssignments', function ($assignmentQuery) use ($request) {
+                $assignmentQuery->where('status', 'active')
+                    ->when($request->company_id, function ($query) use ($request) {
+                        $query->where('company_id', $request->company_id);
+                    })
+                    ->when($request->company_name, function ($query) use ($request) {
+                        $query->whereHas('company', function ($companyQuery) use ($request) {
+                            $companyQuery->where('name', $request->company_name);
+                        });
                     });
-            });
-        })
+            })
+            ->when($request->search, function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->whereHas('users', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%");
+                });
+            })
             ->when($request->date, function ($query) use ($request) {
                 $query->whereDate('date', $request->date);
             })
-            ->with('users')
+            ->with([
+                'users.employeeAssignments' => function ($query) use ($request) {
+                    $query->where('status', 'active')
+                        ->when($request->company_id, function ($assignmentQuery) use ($request) {
+                            $assignmentQuery->where('company_id', $request->company_id);
+                        })
+                        ->when($request->company_name, function ($assignmentQuery) use ($request) {
+                            $assignmentQuery->whereHas('company', function ($companyQuery) use ($request) {
+                                $companyQuery->where('name', $request->company_name);
+                            });
+                        });
+                },
+                'users.employeeAssignments.company',
+                'users.employeeAssignments.departemen',
+                'users.employeeAssignments.position',
+            ])
             ->latest()
             ->paginate(10);
 
-        $attadances->appends($request->only('search', 'date'));
+        $attedances->appends(
+            $request->only('company_id', 'company_name', 'search', 'date')
+        );
 
-        if ($attadances) {
-            return new AttedanceResource(true, 'List Data  Attandances', $attadances);
-        }
-
-        return new AttedanceResource(false, 'Attendance data not available ', null);
+        return new AttedanceResource(
+            true,
+            'List Data Attendances',
+            $attedances
+        );
     }
 
 
@@ -64,7 +91,7 @@ class AttedanceController extends Controller
             'longitude' => 'required'
         ]);
 
-        $attedance = Attedance::where('user_id', $request->users()->id)->where('date', date('Y-m-d'))->first();
+        $attedance = Attedance::where('user_id', $request->user()->id)->where('date', date('Y-m-d'))->first();
 
         if (!$attedance) {
             return response()->json(['message' => 'Checkin first'], 400);
@@ -76,5 +103,20 @@ class AttedanceController extends Controller
         $attedance->save();
 
         return new AttedanceResource(true, 'Checkout Successfully', $attedance);
+    }
+
+
+    // check is checkedin
+
+    public function isCheckedin(Request $request)
+    {
+        $attedance = Attedance::where('user_id', $request->user()->id)
+            ->where('date', date('Y-m-d'))
+            ->first();
+
+        return response()->json([
+            'checkedin' => $attedance ? true : false,
+            'attedance' => $attedance
+        ], 200);
     }
 }

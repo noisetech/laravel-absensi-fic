@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/attedances', [AttedanceController::class, 'index']);
+    Route::post('/attedances/checkin', [AttedanceController::class, 'checkin']);
+    Route::post('/attedances/checkout', [AttedanceController::class, 'checkout']);
 
     Route::apiResource('/companies', CompanyController::class);
 });

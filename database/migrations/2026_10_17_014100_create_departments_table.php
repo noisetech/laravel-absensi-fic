@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('phone')->nullable();
-            $table->string('role')->default('user');
+        Schema::create('departments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->string('name');
+            $table->enum('status', ['active', 'non-active']);
+            $table->timestamps();
         });
     }
 
@@ -22,9 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('phone');
-            $table->dropColumn('role');
-        });
+        Schema::dropIfExists('departments');
     }
 };

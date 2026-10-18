@@ -82,7 +82,7 @@
                             </div>
                             @enderror
                         </div>
-
+<!--
                         <div class="form-group">
                             <label>Position</label>
                             <input type="text"
@@ -109,7 +109,7 @@
                                 {{ $message }}
                             </div>
                             @enderror
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label>Phone</label>
                             <input type="number" class="form-control" name="phone">

@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attedances', function (Blueprint $table) {
+        Schema::create('positions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->date('date');
-            $table->time('time_in');
-            $table->time('time_out')->nullable();
-            $table->string('latlon_in');
-            $table->string('latlon_out')->nullable();
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->string('name');
+            $table->string('level');
+            $table->text('description')->nullable();
+            $table->enum('status', ['active', 'non-active'])->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attedances');
+        Schema::dropIfExists('positions');
     }
 };
