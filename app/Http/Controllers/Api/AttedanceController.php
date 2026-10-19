@@ -11,14 +11,11 @@ use Illuminate\Support\Facades\Validator;
 class AttedanceController extends Controller
 {
 
-    public function index(Request $request)
+    public function all(Request $request)
     {
         $attedances = Attedance::query()
             ->whereHas('users.employeeAssignments', function ($assignmentQuery) use ($request) {
                 $assignmentQuery->where('status', 'active')
-                    ->when($request->company_id, function ($query) use ($request) {
-                        $query->where('company_id', $request->company_id);
-                    })
                     ->when($request->company_name, function ($query) use ($request) {
                         $query->whereHas('company', function ($companyQuery) use ($request) {
                             $companyQuery->where('name', $request->company_name);
@@ -55,12 +52,67 @@ class AttedanceController extends Controller
             ->paginate(10);
 
         $attedances->appends(
-            $request->only('company_id', 'company_name', 'search', 'date')
+            $request->only('company_name', 'search', 'date')
         );
 
         return new AttedanceResource(
             true,
-            'List Data Attendances',
+            'List All Data Attendances',
+            $attedances
+        );
+    }
+
+    public function getByCompany(Request $request)
+    {
+        $user = $request->user();
+
+        $companyId = $user->employeeAssignments()
+            ->where('status', 'active')
+            ->value('company_id');
+
+
+        if (!$companyId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Akun Anda tidak memiliki perusahaan aktif.',
+                'data' => null,
+            ], 403);
+        }
+
+        $attedances = Attedance::query()
+            ->whereHas('users.employeeAssignments', function ($query) use ($companyId) {
+                $query->where('company_id', $companyId)
+                    ->where('status', 'active');
+            })
+            ->when($request->search, function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->whereHas('users', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->date, function ($query) use ($request) {
+                $query->whereDate('date', $request->date);
+            })
+            ->with([
+                'users.employeeAssignments' => function ($query) use ($companyId) {
+                    $query->where('company_id', $companyId)
+                        ->where('status', 'active');
+                },
+                'users.employeeAssignments.company',
+                'users.employeeAssignments.departemen',
+                'users.employeeAssignments.position',
+            ])
+            ->latest()
+            ->paginate(10);
+
+        $attedances->appends(
+            $request->only('search', 'date')
+        );
+
+        return new AttedanceResource(
+            true,
+            'List Data Attendances By Company',
             $attedances
         );
     }

@@ -21,8 +21,6 @@ return new class extends Migration
             $table->string('face_embedding')->nullable();
             $table->string('image_url')->nullable();
             $table->string('phone')->nullable();
-            $table->string('dapertemen')->nullable();
-            $table->string('position')->nullable();
             $table->string('role')->default('user');
             $table->enum('status', ['active', 'non-active'])->default('active');
             $table->rememberToken();

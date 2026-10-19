@@ -24,7 +24,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::get('/attedances', [AttedanceController::class, 'index']);
+    Route::get('/attedances/all', [AttedanceController::class, 'all']);
+    Route::get('/attedances/getByCompany', [AttedanceController::class, 'getByCompany']);
     Route::post('/attedances/checkin', [AttedanceController::class, 'checkin']);
     Route::post('/attedances/checkout', [AttedanceController::class, 'checkout']);
 
