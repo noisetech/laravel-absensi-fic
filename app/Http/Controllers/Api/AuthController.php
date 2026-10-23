@@ -6,42 +6,42 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $loginData = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+        //set validasi
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'password' => 'required',
         ]);
 
-        $user = User::where('email', $loginData['email'])->first();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+        //response error validasi
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
-        if (!Hash::check($loginData['password'], $user->password)) {
+        //get "email" dan "password" dari input
+        $credentials = $request->only('email', 'password');
+
+        //check jika "email" dan "password" tidak sesuai
+        if (!$token = auth()->guard('api')->attempt($credentials)) {
+
+            //response login "failed"
             return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+                'success' => false,
+                'message' => 'Email or Password is incorrect'
+            ], 400);
         }
 
-        if (isset($user->status) && strtolower($user->status) !== 'active') {
-            return response()->json([
-                'message' => 'Your account is inactive.'
-            ], 401);
-        }
-
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
+        //response login "success" dengan generate "Token"
         return response()->json([
-            'token' => $token,
-            'user' => $user
+            'success'       => true,
+            'user'          => auth()->guard('api')->user()->only(['name', 'email']),
+            'permissions'   => auth()->guard('api')->user()->getPermissionArray(),
+            'token'         => $token
         ], 200);
     }
 

@@ -13,22 +13,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::factory(10)->create();
 
-        \App\Models\User::factory()->create([
-            'name' => 'Roby Ortega',
-            'email' => 'ortega@gmail.com',
-            'password' => Hash::make('12345678')
-        ]);
+        $this->call(RoleSeeder::class);
+        $this->call(PermissionSeeder::class);
+        $this->call(UserSeeder::class);
 
-        $this->call(CompanySeeder::class);
+        // \App\Models\User::factory(10)->create();
 
-        $this->call(DepartmentSeeder::class);
+        // $this->call(CompanySeeder::class);
 
-        $this->call(PositionSeeder::class);
+        // $this->call(DepartmentSeeder::class);
 
-        $this->call(AttedanceSeeder::class);
+        // $this->call(PositionSeeder::class);
 
-        $this->call(EmpeloyeAssignmentSeeder::class);
+        // $this->call(AttedanceSeeder::class);
+
+        // $this->call(EmpeloyeAssignmentSeeder::class);
     }
 }

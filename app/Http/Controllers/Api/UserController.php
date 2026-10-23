@@ -53,7 +53,15 @@ class UserController extends Controller
         return new UserResource(false, 'Data User Failed to Add!', null);
     }
 
-    public function destroy(User $user){
-        
+
+    public function getById($Id){
+        $users = User::find($Id);
     }
+
+    public function destroy(User $user){
+
+    }
+
+
+
 }
