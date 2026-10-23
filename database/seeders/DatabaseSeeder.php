@@ -18,16 +18,16 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionSeeder::class);
         $this->call(UserSeeder::class);
 
-        // \App\Models\User::factory(10)->create();
+        \App\Models\User::factory(10)->create();
 
-        // $this->call(CompanySeeder::class);
+        $this->call(CompanySeeder::class);
 
-        // $this->call(DepartmentSeeder::class);
+        $this->call(DepartmentSeeder::class);
 
-        // $this->call(PositionSeeder::class);
+        $this->call(PositionSeeder::class);
 
-        // $this->call(AttedanceSeeder::class);
+        $this->call(AttedanceSeeder::class);
 
-        // $this->call(EmpeloyeAssignmentSeeder::class);
+        $this->call(EmpeloyeAssignmentSeeder::class);
     }
 }

@@ -60,13 +60,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(EmpeloyeAssignment::class, 'user_id');
     }
 
-    public function getPermissionArray(): array
+
+    public function getPermissionArray()
     {
-        return $this->getAllPermissions()
-            ->mapWithKeys(fn($permission) => [
-                $permission->name => true,
-            ])
-            ->toArray();
+        return $this->getAllPermissions()->mapWithKeys(function ($pr) {
+            return [$pr['name'] => true];
+        });
     }
 
     public function getJWTIdentifier()

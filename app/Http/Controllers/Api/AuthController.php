@@ -36,10 +36,17 @@ class AuthController extends Controller
             ], 400);
         }
 
+        $user = auth()->guard('api')->user();
+
+        $user->load('roles.permissions');
+
+        // Sembunyikan permissions langsung dari objek user
+        // $user->makeHidden('permissions');
+
         //response login "success" dengan generate "Token"
         return response()->json([
             'success'       => true,
-            'user'          => auth()->guard('api')->user()->only(['name', 'email']),
+            'user'          => auth()->guard('api')->user(),
             'permissions'   => auth()->guard('api')->user()->getPermissionArray(),
             'token'         => $token
         ], 200);

@@ -16,18 +16,26 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware(['auth:api'])->group(function () {
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::middleware('auth:api')->group(function () {
+
+        Route::middleware('role:super admin,api')->group(function () {
+            Route::get('/attedances/all', [AttedanceController::class, 'all']);
+
+            Route::get('/attedances/getByCompany', [AttedanceController::class, 'getByCompany']);
+
+            Route::apiResource('/companies', CompanyController::class);
+        });
     });
 
-    Route::get('/attedances/all', [AttedanceController::class, 'all']);
-    Route::get('/attedances/getByCompany', [AttedanceController::class, 'getByCompany']);
+    Route::apiResource('/companies', CompanyController::class);
+
+    // Semua user yang terautentikasi
     Route::post('/attedances/checkin', [AttedanceController::class, 'checkin']);
     Route::post('/attedances/checkout', [AttedanceController::class, 'checkout']);
-
-    Route::apiResource('/companies', CompanyController::class);
 });
